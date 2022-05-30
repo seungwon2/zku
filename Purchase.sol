@@ -88,29 +88,14 @@ contract Purchase {
         state = State.Locked;
     }
 
-    /// Confirm that you (the buyer) received the item.
-    /// This will release the locked ether.
-    function confirmReceived()
-        external
-        onlyBuyer
-        inState(State.Locked)
-    {
+    function completePurchase() external onlyBuyer inState(State.Locked){
         emit ItemReceived();
         // It is important to change the state first because
         // otherwise, the contracts called using `send` below
         // can call in again here.
-        state = State.Release;
 
         buyer.transfer(value);
-    }
 
-    /// This function refunds the seller, i.e.
-    /// pays back the locked funds of the seller.
-    function refundSeller()
-        external
-        onlySeller
-        inState(State.Release)
-    {
         emit SellerRefunded();
         // It is important to change the state first because
         // otherwise, the contracts called using `send` below
